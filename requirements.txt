@@ -1,0 +1,12 @@
+# Python 3.10 (experiments were run with 3.10.11).
+# Direct dependencies, pinned. requirements-lock.txt pins every package,
+# including the indirect ones, as installed in our environment.
+numpy==2.2.6
+pandas==2.3.3
+scipy==1.15.3
+matplotlib==3.10.7
+openpyxl==3.1.5
+PyYAML==6.0.3
+pytest==8.4.2
+# Only used by the tests, to check our NDCG against a reference implementation.
+scikit-learn==1.7.2

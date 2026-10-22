@@ -1,0 +1,15 @@
+[project]
+name = "movielens-recsys"
+version = "0.1.0"
+description = "DATA.ML.360 Recommender Systems course project on MovieLens 1M (Group 2)"
+requires-python = ">=3.10,<3.13"
+authors = [
+    { name = "Anas Uddin" },
+    { name = "Melek Chelik" },
+    { name = "Menaka Wellane Hewage" },
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-q"

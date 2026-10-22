@@ -1,0 +1,6 @@
+# LF everywhere, so files look the same on Windows, macOS and Linux.
+* text=auto eol=lf
+*.xlsm binary
+*.docx binary
+*.png binary
+*.pdf binary

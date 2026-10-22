@@ -1,0 +1,81 @@
+{
+  "config_file": "configs/default.yaml",
+  "parts": [
+    1
+  ],
+  "quick": false,
+  "seed": 42,
+  "started_utc": "2026-10-22T09:03:42+00:00",
+  "finished_utc": "2026-10-22T09:03:45+00:00",
+  "timings_seconds": {
+    "loading data": 1.28,
+    "part 1": 1.09
+  },
+  "data_md5": {
+    "ratings.dat": "a89aa3591bc97d6d4e0c89459ff39362",
+    "movies.dat": "ef9fd9ff8d1b33faf73e2122c371e910",
+    "users.dat": "681c0711d0d4548cd3d4718a49c2dcd8"
+  },
+  "environment": {
+    "python": "3.10.11",
+    "platform": "Windows-10-10.0.19045-SP0",
+    "packages": {
+      "numpy": "2.2.6",
+      "pandas": "2.3.3",
+      "scipy": "1.15.3",
+      "matplotlib": "3.10.7",
+      "openpyxl": "3.1.5",
+      "PyYAML": "6.0.3",
+      "scikit-learn": "1.7.2"
+    },
+    "git_commit": null
+  },
+  "config": {
+    "seed": 42,
+    "team": {
+      "name": "Group 2",
+      "members": [
+        "Anas Uddin",
+        "Melek Chelik",
+        "Menaka Wellane Hewage"
+      ],
+      "repository": "",
+      "part3_track": ""
+    },
+    "split": {
+      "mode": "calendar",
+      "val_start": "2001-01-01",
+      "test_start": "2001-07-01",
+      "quantiles": [
+        0.8,
+        0.9
+      ]
+    },
+    "filtering": {
+      "min_item_train_ratings": 1,
+      "min_user_history": 1
+    },
+    "evaluation": {
+      "k": 10,
+      "relevance_threshold": 4,
+      "bootstrap_samples": 1000,
+      "confidence": 0.95,
+      "batch_size": 1024
+    },
+    "part1": {
+      "reference_models": [
+        {
+          "name": "random",
+          "params": {}
+        },
+        {
+          "name": "most_popular",
+          "params": {
+            "window_days": null,
+            "min_rating": null
+          }
+        }
+      ]
+    }
+  }
+}

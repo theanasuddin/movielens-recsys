@@ -1,0 +1,3 @@
+Sheet,Model,Variant / settings,Similarity,k,Precision@10,Recall@10,NDCG@10,Catalogue coverage,Seed,Notes
+Part 1 - Baselines,Random,seed=42,,,0.011840,0.002379,0.012231,0.867950,42,"test users=777; candidates=3688 items; NDCG@10 95% bootstrap CI [0.0092, 0.0153]"
+Part 1 - Baselines,MostPopular,"all-time, all ratings",,,0.152896,0.056597,0.168904,0.040944,42,"test users=777; candidates=3688 items; NDCG@10 95% bootstrap CI [0.1538, 0.1847]"

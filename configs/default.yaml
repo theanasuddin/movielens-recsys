@@ -1,0 +1,43 @@
+# Configuration used for every number and figure in the report.
+# Change values here, not in the code. run_all.py copies the resolved
+# config into results/run_info.json so a result can be traced to its settings.
+
+seed: 42
+
+team:
+  name: "Group 2"
+  members:
+    - "Anas Uddin"
+    - "Melek Chelik"
+    - "Menaka Wellane Hewage"
+  repository: ""     # GitHub URL, filled in once the repository exists
+  part3_track: ""    # A, B or C, announced with Part 2
+
+split:
+  # "calendar": cut at the two dates below (UTC).
+  # "quantile": cut at the given quantiles of the rating timestamps.
+  mode: calendar
+  val_start: "2001-01-01"
+  test_start: "2001-07-01"
+  quantiles: [0.8, 0.9]
+
+filtering:
+  # Items with fewer training ratings than this leave the training data and
+  # the candidate set. 1 means no item filtering.
+  min_item_train_ratings: 1
+  # Users need at least this many training ratings to be evaluated.
+  min_user_history: 1
+
+evaluation:
+  k: 10
+  relevance_threshold: 4    # a held-out rating counts as relevant if >= 4
+  bootstrap_samples: 1000
+  confidence: 0.95
+  batch_size: 1024
+
+part1:
+  reference_models:
+    - name: random
+      params: {}
+    - name: most_popular
+      params: {window_days: null, min_rating: null}

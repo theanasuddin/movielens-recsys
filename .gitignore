@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# MovieLens may not be redistributed (see the GroupLens licence), so the data
+# stays out of the repository. data/README.md explains where to put it.
+data/*
+!data/README.md
+*.zip
+
+# Run outputs that are not part of the submission
+results/logs/
+results-quick/
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+~$*
