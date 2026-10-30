@@ -5,11 +5,11 @@
   ],
   "quick": false,
   "seed": 42,
-  "started_utc": "2026-10-22T09:03:42+00:00",
-  "finished_utc": "2026-10-22T09:03:45+00:00",
+  "started_utc": "2026-10-27T10:40:25+00:00",
+  "finished_utc": "2026-10-27T10:42:40+00:00",
   "timings_seconds": {
-    "loading data": 1.28,
-    "part 1": 1.09
+    "loading data": 1.17,
+    "part 1": 133.1
   },
   "data_md5": {
     "ratings.dat": "a89aa3591bc97d6d4e0c89459ff39362",
@@ -28,7 +28,7 @@
       "PyYAML": "6.0.3",
       "scikit-learn": "1.7.2"
     },
-    "git_commit": null
+    "git_commit": "9372843c4494ed8dec88c2f4fe9690a6b9dfbd2b-dirty"
   },
   "config": {
     "seed": 42,
@@ -39,7 +39,7 @@
         "Melek Chelik",
         "Menaka Wellane Hewage"
       ],
-      "repository": "",
+      "repository": "https://github.com/theanasuddin/movielens-recsys",
       "part3_track": ""
     },
     "split": {
@@ -63,19 +63,102 @@
       "batch_size": 1024
     },
     "part1": {
-      "reference_models": [
-        {
-          "name": "random",
-          "params": {}
-        },
-        {
-          "name": "most_popular",
-          "params": {
-            "window_days": null,
+      "item_knn": {
+        "k": [
+          10,
+          20,
+          50,
+          100,
+          200,
+          500,
+          1000
+        ],
+        "variants": [
+          {
+            "similarity": "cosine",
+            "min_rating": null
+          },
+          {
+            "similarity": "cosine",
+            "min_rating": 4
+          },
+          {
+            "similarity": "jaccard",
+            "min_rating": null
+          },
+          {
+            "similarity": "jaccard",
+            "min_rating": 4
+          },
+          {
+            "similarity": "adjusted_cosine",
             "min_rating": null
           }
+        ]
+      },
+      "most_popular": {
+        "window_days": [
+          null,
+          30,
+          90,
+          180
+        ],
+        "min_rating": [
+          null,
+          4
+        ]
+      },
+      "filter_sensitivity": {
+        "min_item_train_ratings": [
+          1,
+          5,
+          10,
+          20,
+          50
+        ],
+        "min_user_history": [
+          1,
+          20,
+          50
+        ]
+      },
+      "split_sensitivity": [
+        {
+          "mode": "quantile",
+          "quantiles": [
+            0.8,
+            0.9
+          ]
         }
-      ]
+      ],
+      "quick": {
+        "knn_k": [
+          20,
+          200
+        ],
+        "knn_variants": [
+          {
+            "similarity": "cosine",
+            "min_rating": null
+          },
+          {
+            "similarity": "jaccard",
+            "min_rating": 4
+          }
+        ],
+        "pop_window_days": [
+          null,
+          90
+        ],
+        "item_thresholds": [
+          1,
+          10
+        ],
+        "user_thresholds": [
+          1,
+          20
+        ]
+      }
     }
   }
 }

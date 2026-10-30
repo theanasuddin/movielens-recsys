@@ -1,0 +1,5 @@
+split,part,starts,ratings,users,users without any earlier rating,share of users without any earlier rating,evaluable users (>= 1 relevant item and >= 1 earlier rating),median earlier ratings of evaluable users,rows within 1 day of the user's last earlier rating,rows more than 30 days after the user's last earlier rating,rows on movies with no earlier rating
+calendar (main),validation,2001-01-01,47314,926,3,0.0032397408207343412,892,169.0,0.0009544818224239596,0.8379501972595766,0.00033816629327471787
+calendar (main),test,2001-07-01,48138,799,3,0.0037546933667083854,777,212.0,0.00027316089176524975,0.9700573637872707,0.00051934023017159
+count-based 80/10/10,validation,2000-12-02,100024,1134,611,0.5388007054673721,492,172.5,0.035223079503522305,0.1688611204293861,0.00016995920978965049
+count-based 80/10/10,test,2000-12-29,100021,1209,29,0.023986765922249794,1159,150.0,0.005364672483613744,0.9175781739239344,0.0008998110396816668

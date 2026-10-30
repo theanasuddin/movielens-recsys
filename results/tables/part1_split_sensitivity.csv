@@ -1,0 +1,5 @@
+split,model,selected_settings,validation_ndcg@10,own_test_users,own_test_ndcg@10,own_test_coverage,main_test_ndcg@10_with_these_settings
+count-based 80/10/10,ItemKNN,"{'similarity': 'cosine', 'min_rating': 4, 'k': 1000}",0.14550630244193877,1159.0,0.24573531502679097,0.09651984774333877,0.20661037316709052
+count-based 80/10/10,MostPopular,"{'window_days': 90, 'min_rating': 4}",0.12662248183508465,1159.0,0.21108735460019046,0.03534529635671561,0.15793992251853103
+calendar (main),ItemKNN,"{'similarity': 'cosine', 'min_rating': 4, 'k': 500}",0.1735488915185037,,,,
+calendar (main),MostPopular,"{'window_days': 30, 'min_rating': 4}",0.16081329818743026,,,,

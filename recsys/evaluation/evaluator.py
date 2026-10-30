@@ -70,9 +70,18 @@ def evaluate(
     cfg: EvaluationConfig,
     min_history: int = 1,
     seed: int = 0,
+    drop_unreachable: bool = False,
 ) -> EvaluationResult:
-    """Evaluate a fitted model on held-out ratings (validation or test)."""
+    """Evaluate a fitted model on held-out ratings (validation or test).
+
+    By default relevant items outside the catalogue stay in the ground truth
+    and count as misses. drop_unreachable=True removes them first, which is
+    what many papers do after filtering rare items; it is only used to show
+    how much that choice moves the numbers.
+    """
     ids = train.ids
+    if drop_unreachable:
+        held_out = held_out[held_out["item_id"].isin(ids.items[train.catalogue])]
     relevant = to_matrix(held_out[held_out["rating"] >= cfg.relevance_threshold], ids)
     users = evaluation_users(train, held_out, cfg.relevance_threshold, min_history)
     tie_order = np.random.default_rng(seed).permutation(ids.n_items)

@@ -1,0 +1,28 @@
+statistic,value
+ratings,1000209
+users,6040
+movies in movies.dat,3883
+movies with at least one rating,3706
+density (ratings / (users x rated movies)),0.044683625622312845
+ratings per user: min,20
+ratings per user: median,96.0
+ratings per user: mean,165.5975165562914
+ratings per user: max,2314
+ratings per movie: min,1
+ratings per movie: median,123.5
+ratings per movie: mean,269.88909875876953
+ratings per movie: max,3428
+movies with exactly 1 rating,114
+movies with fewer than 20 ratings,663
+Gini of ratings per movie,0.6335616301416965
+Gini of ratings per user,0.5286242435264804
+mean rating,3.581564453029317
+share of ratings >= 4,0.5751607913945985
+first rating (UTC),2000-04-25
+last rating (UTC),2003-02-28
+date by which 90% of ratings were entered,2000-12-29
+share of 1-star ratings,0.05616226208722377
+share of 2-star ratings,0.1075345252842156
+share of 3-star ratings,0.2611424212339621
+share of 4-star ratings,0.34889808030121705
+share of 5-star ratings,0.22626271109338147

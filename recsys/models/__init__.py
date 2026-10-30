@@ -5,11 +5,13 @@ from __future__ import annotations
 from typing import Any
 
 from recsys.models.base import Recommender
+from recsys.models.item_knn import ItemKNN
 from recsys.models.popularity import MostPopular, RandomRecommender
 
 MODELS: dict[str, type[Recommender]] = {
     "random": RandomRecommender,
     "most_popular": MostPopular,
+    "item_knn": ItemKNN,
 }
 
 
@@ -27,4 +29,4 @@ def build_model(name: str, default_seed: int | None = None, **params: Any) -> Re
     return cls(**params)
 
 
-__all__ = ["MODELS", "MostPopular", "RandomRecommender", "Recommender", "build_model"]
+__all__ = ["MODELS", "ItemKNN", "MostPopular", "RandomRecommender", "Recommender", "build_model"]

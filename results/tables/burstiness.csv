@@ -1,0 +1,7 @@
+statistic,value
+users whose ratings all fall within 1 hour,0.4817880794701987
+users whose ratings all fall within 1 day,0.6293046357615895
+median span between a user's first and last rating (days),0.04708912037037037
+ratings entered within 1 day of the user's first rating,0.723573773081426
+ratings sharing their exact second with another rating of the same user,0.7738662619512522
+largest number of ratings one user entered in the same second,30.0
