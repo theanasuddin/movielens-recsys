@@ -1,0 +1,16 @@
+Model,Training interactions (%),Precision@10,Recall@10,NDCG@10,Catalogue coverage,Seed(s),Notes,target_fraction
+MostPopular,100.0,0.12213642213642215,0.07021923330625765,0.1587556329928222,0.020065075921908895,42,952071 rows; 777 evaluated users; validation-selected params frozen; test unchanged; user-stratified sampling,1.0
+ItemKNN,100.0,0.18030888030888034,0.07416044356587675,0.20189389638413827,0.125,42,952071 rows; 777 evaluated users; validation-selected params frozen; test unchanged; user-stratified sampling,1.0
+UserKNN,100.0,0.18519948519948523,0.07778658889228647,0.20778732003525144,0.09056399132321041,42,952071 rows; 777 evaluated users; validation-selected params frozen; test unchanged; user-stratified sampling,1.0
+BiasedMF (self-implemented),100.0,0.04594594594594595,0.014910260733200146,0.04895161685477246,0.34463123644251625,42,952071 rows; 777 evaluated users; validation-selected params frozen; test unchanged; user-stratified sampling,1.0
+ContentProfile,100.0,0.017245817245817245,0.0061241994992108,0.01604289678446452,0.14289587852494576,42,952071 rows; 777 evaluated users; validation-selected params frozen; test unchanged; user-stratified sampling,1.0
+MostPopular,50.0,0.08867438867438868,0.05327950492232957,0.11716916864400041,0.006950236308034473,42,475992 rows; 777 evaluated users; validation-selected params frozen; test unchanged; user-stratified sampling,0.5
+ItemKNN,50.0,0.07786357786357787,0.031626685548564175,0.07953978006841324,0.11926605504587157,42,475992 rows; 777 evaluated users; validation-selected params frozen; test unchanged; user-stratified sampling,0.5
+UserKNN,50.0,0.08275418275418275,0.035990801972055925,0.0860442831885197,0.05448985265499027,42,475992 rows; 777 evaluated users; validation-selected params frozen; test unchanged; user-stratified sampling,0.5
+BiasedMF (self-implemented),50.0,0.036036036036036036,0.012299209246175108,0.03619459615756207,0.29524603836530444,42,475992 rows; 777 evaluated users; validation-selected params frozen; test unchanged; user-stratified sampling,0.5
+ContentProfile,50.0,0.016344916344916346,0.005946360758331991,0.015973556794931117,0.1609674728940784,42,475992 rows; 777 evaluated users; validation-selected params frozen; test unchanged; user-stratified sampling,0.5
+MostPopular,20.0,0.06962676962676961,0.04090411975982602,0.0916647278826012,0.004667444574095682,42,190375 rows; 777 evaluated users; validation-selected params frozen; test unchanged; user-stratified sampling,0.2
+ItemKNN,20.0,0.04851994851994852,0.021345316048721134,0.051668423050342326,0.27683780630105015,42,190375 rows; 777 evaluated users; validation-selected params frozen; test unchanged; user-stratified sampling,0.2
+UserKNN,20.0,0.06602316602316602,0.026324314219297634,0.07007111266528482,0.06301050175029171,42,190375 rows; 777 evaluated users; validation-selected params frozen; test unchanged; user-stratified sampling,0.2
+BiasedMF (self-implemented),20.0,0.024066924066924067,0.00777946865660483,0.02237922488344773,0.16219369894982497,42,190375 rows; 777 evaluated users; validation-selected params frozen; test unchanged; user-stratified sampling,0.2
+ContentProfile,20.0,0.014671814671814675,0.0035181196934025278,0.013593444610217364,0.17415402567094515,42,190375 rows; 777 evaluated users; validation-selected params frozen; test unchanged; user-stratified sampling,0.2

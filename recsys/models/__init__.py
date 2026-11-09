@@ -7,11 +7,17 @@ from typing import Any
 from recsys.models.base import Recommender
 from recsys.models.item_knn import ItemKNN
 from recsys.models.popularity import MostPopular, RandomRecommender
+from recsys.models.user_knn import UserKNN
+from recsys.models.matrix_factorization import BiasedMF
+from recsys.models.content_based import ContentProfile
 
 MODELS: dict[str, type[Recommender]] = {
     "random": RandomRecommender,
     "most_popular": MostPopular,
     "item_knn": ItemKNN,
+    "user_knn": UserKNN,
+    "biased_mf": BiasedMF,
+    "content_profile": ContentProfile,
 }
 
 

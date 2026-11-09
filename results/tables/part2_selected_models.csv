@@ -1,0 +1,6 @@
+model,selected_params,validation_ndcg@10,budget
+most_popular,"{'window_days': 30, 'min_rating': 4}",0.16081329818743026,8
+item_knn,"{'k': 200, 'similarity': 'cosine', 'min_rating': 4}",0.16784560945389843,8
+user_knn,"{'k': 160, 'similarity': 'cosine', 'min_rating': 4}",0.16768364195468288,8
+biased_mf,"{'factors': 48, 'epochs': 16, 'lr': 0.05, 'reg': 0.02}",0.03846034128182414,8
+content_profile,"{'min_rating': 4, 'year_weight': 0.0}",0.01616592631099462,8
