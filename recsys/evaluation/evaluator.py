@@ -13,9 +13,10 @@ from dataclasses import dataclass
 
 import numpy as np
 import pandas as pd
+import scipy.sparse as sp
 
 from recsys.config import EvaluationConfig
-from recsys.data.dataset import TrainData, to_matrix
+from recsys.data.dataset import IdMap, TrainData, to_matrix
 from recsys.evaluation import metrics
 from recsys.models.base import Recommender
 
@@ -115,3 +116,32 @@ def evaluate(
         "ndcg": metrics.ndcg_at_k(hits, n_relevant),
     })
     return EvaluationResult(per_user, recommendations, int(train.catalogue.sum()), k)
+
+
+def relevance_matrix(held_out: pd.DataFrame, ids: IdMap, relevance_threshold: int) -> sp.csr_matrix:
+    """Binary user x item matrix of the relevant held-out ratings."""
+    return to_matrix(held_out[held_out["rating"] >= relevance_threshold], ids)
+
+
+def metrics_against(result: EvaluationResult, relevant: sp.csr_matrix, ids: IdMap) -> tuple[pd.DataFrame, np.ndarray]:
+    """Score a result's top-k lists against a different set of relevant items.
+
+    Used for the Part 2 breakdowns: the lists stay as they are and only the
+    movies that count as relevant change, for example only tail movies or only
+    ratings from the second half of the test period. Users left without any
+    relevant movie are dropped. Returns the per-user metrics and a boolean
+    mask over result.per_user saying which users were kept.
+    """
+    rel = relevant[ids.user_index(result.per_user["user_id"])].toarray() > 0
+    n_relevant = rel.sum(axis=1)
+    keep = n_relevant > 0
+    hits = np.take_along_axis(rel, result.recommendations, axis=1)[keep]
+    n_relevant = n_relevant[keep]
+    per_user = pd.DataFrame({
+        "user_id": result.per_user["user_id"].to_numpy()[keep],
+        "n_relevant": n_relevant,
+        "precision": metrics.precision_at_k(hits),
+        "recall": metrics.recall_at_k(hits, n_relevant),
+        "ndcg": metrics.ndcg_at_k(hits, n_relevant),
+    })
+    return per_user, keep

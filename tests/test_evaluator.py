@@ -79,6 +79,18 @@ def test_item_filter_shrinks_the_catalogue(tiny_ml, tiny_ids):
     assert kept == set(counts.index) and (counts >= 2).all()
 
 
+def test_history_keeps_the_task_fixed_when_training_on_a_subsample(tiny_ml, tiny_ids):
+    full = tiny_ml.ratings[tiny_ml.ratings["timestamp"] < T0 + 10 * DAY]
+    subsample = full.iloc[::2]
+    train = make_train_data(subsample, tiny_ids, cutoff=T0 + 10 * DAY, history=full)
+    reference = make_train_data(full, tiny_ids, cutoff=T0 + 10 * DAY)
+
+    assert len(train.ratings) == len(subsample)
+    assert (train.seen != reference.seen).nnz == 0
+    np.testing.assert_array_equal(train.catalogue, reference.catalogue)
+    np.testing.assert_array_equal(train.history_sizes(), reference.history_sizes())
+
+
 def test_top_k_breaks_ties_with_the_given_order():
     scores = np.array([[1.0, 1.0, 1.0, 0.0]])
     assert top_k(scores, 2, np.array([2, 0, 1, 3])).tolist() == [[2, 0]]

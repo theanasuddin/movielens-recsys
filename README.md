@@ -8,28 +8,44 @@ Team: Anas Uddin, Melek Chelik, Menaka Wellane Hewage.
 | Part | Content | Status |
 | --- | --- | --- |
 | 1 | Data, protocol, baselines | done |
-| 2 | Models and honest comparison | implementation complete; full-data run/report pending |
-| 3 | Beyond accuracy (track to be announced with Part 2) | not started |
+| 2 | Models and honest comparison | done |
+| 3 | Beyond accuracy, Track A (diversity and popularity bias) | not started |
 
-## Part 1 submission
+## What to grade
 
-Everything handed in for Part 1 is in this repository:
+Everything handed in is in this repository:
 
 | What | Where |
 | --- | --- |
-| Report (Part 1 version, 4 pages plus references) | [report/Group2_Recommender_Systems_Report.pdf](report/Group2_Recommender_Systems_Report.pdf), Word file: [report/Group2_Recommender_Systems_Report.docx](report/Group2_Recommender_Systems_Report.docx) |
-| Results in the course results template | [results/Recommender_Systems_Results_Group2.xlsm](results/Recommender_Systems_Results_Group2.xlsm), sheet "Part 1 - Baselines" |
+| Report (Part 2 version, 8 pages plus references) | [report/Group2_Recommender_Systems_Report.pdf](report/Group2_Recommender_Systems_Report.pdf), Word file: [report/Group2_Recommender_Systems_Report.docx](report/Group2_Recommender_Systems_Report.docx) |
+| Results in the course results template | [results/Recommender_Systems_Results_Group2.xlsm](results/Recommender_Systems_Results_Group2.xlsm), sheets "Part 1 - Baselines", "Part 2 - Models", "Part 2 - Disaggregated" and "Part 2 - Sparsity" |
 | The same results, machine-readable | [results/results.csv](results/results.csv) |
 | Figures used in the report | [results/figures/](results/figures/) |
 | Tables behind every number in the report | [results/tables/](results/tables/) |
 | Code, and the command that reproduces all of the above | [run_all.py](run_all.py), see [Reproducing the results](#reproducing-the-results) |
 
 The report is one document that grows with each part; the PDF is an export
-of the .docx, and every number in it comes from the generated tables. The
-workbook's "Part 1 - Baselines" sheet lists all 14 evaluated variants with
-their test metrics, seed, and 95% interval in the Notes column.
+of the .docx, and every number in it comes from the generated tables. The one
+exception is the result of our first sparsity protocol quoted in Section 2.5,
+which is in the history at commit `ec678ea`
+(`git show ec678ea:results/tables/part2_sparsity_ranking.csv`).
+In the workbook, the Notes and "Variability / CI / test" columns hold the
+intervals, seeds and paired tests behind each row.
 
-Where each Part 1 requirement of the project description is answered:
+Where each Part 2 requirement of the project description is answered:
+
+| Requirement | Report | Code and outputs |
+| --- | --- | --- |
+| At least three new models from at least two paradigms: user-kNN, biased MF, BPR-MF, EASE, content profile | Section 2.1, Table 2 | `recsys/models/user_knn.py`, `matrix_factorization.py`, `bpr.py`, `ease.py`, `content_based.py` |
+| A self-implemented algorithm, clearly identified: BPR-MF and biased MF | Section 2.1 | `recsys/models/bpr.py`, `recsys/models/matrix_factorization.py`; gradient and planted-structure checks in `tests/test_part2_models.py` |
+| Tuning on validation only, with search space and budget, baselines tuned the same way | Section 2.2 | `configs/default.yaml` (`part2`), `recsys/tuning.py`; `results/tables/part2_validation_trials.csv`, `part2_selected.csv`, `part2_training_curves.csv` |
+| Variability: seeds, intervals and paired tests | Sections 2.2 and 2.3, Figure 3 | `results/tables/part2_test_by_seed.csv`, `part2_paired_tests.csv` |
+| Disaggregated results: user activity, item popularity, early vs late test period | Section 2.4, Table 3, Figure 4 | `results/tables/part2_breakdowns.csv`, `part2_breakdown_differences.csv`, `part2_recommendation_profile.csv`, `part2_item_groups.csv` |
+| Sparsity ablation at 100%, 50% and 20% of the training interactions | Section 2.5, Figure 5 | `results/tables/part2_sparsity_summary.csv`, `part2_sparsity_detail.csv`, `part2_sparsity_top_two.csv`, `part2_sparsity_frozen_settings.csv` |
+| Part 3 track announced | header table, Section 3.1 | `team.part3_track` in `configs/default.yaml` |
+| The question Part 1 left open: a popularity window of a fixed number of ratings | Section 2.3 | `results/tables/part2_popularity_windows.csv` |
+
+Where each Part 1 requirement is answered:
 
 | Requirement | Report | Code and outputs |
 | --- | --- | --- |
@@ -83,14 +99,15 @@ python run_all.py --data-dir data/ml-1m
 ```
 
 The dataset path can point anywhere; nothing in the code depends on where the
-files live. A full run takes about two and a half minutes on a laptop and
+files live. A full run takes about 75 minutes on a laptop, almost all of it
+Part 2 (`--parts 1` runs Part 1 alone in about two and a half minutes), and
 writes:
 
 | Output | Content |
 | --- | --- |
 | `results/results.csv` | machine-readable results, one row per template row, with a `Sheet` column |
 | `results/Recommender_Systems_Results_Group2.xlsm` | the course results template, filled in |
-| `results/figures/` | `fig1_data_overview.png` and `fig2_itemknn_validation.png` (Figures 1 and 2 of the report), plus `rating_distribution.png` |
+| `results/figures/` | `fig1_data_overview.png`, `fig2_itemknn_validation.png`, `fig3_part2_models.png`, `fig4_part2_breakdowns.png` and `fig5_part2_sparsity.png` (Figures 1 to 5 of the report), plus `rating_distribution.png` |
 | `results/tables/` | everything behind the numbers quoted in the report (see below) |
 | `results/run_info.json` | seed, resolved config, package versions, git commit, data checksums and timings |
 
@@ -105,6 +122,19 @@ The tables in `results/tables/` for Part 1:
 | `part1_paired_tests.csv`, `part1_test_per_user.csv` | paired bootstrap intervals and Wilcoxon tests, per-user test metrics |
 | `part1_filter_sensitivity.csv`, `part1_split_sensitivity.csv` | the filtering and split checks |
 
+And for Part 2:
+
+| File | Content |
+| --- | --- |
+| `part2_validation_trials.csv`, `part2_training_curves.csv`, `part2_selected.csv` | every validation trial, the epoch curves of BiasedMF and BPR-MF, and the chosen settings |
+| `part2_test_by_seed.csv`, `part2_test_per_user.csv` | test metrics per seed and per user |
+| `part2_popularity_windows.csv` | every most-popular variant at both cuts: how many ratings and days its window holds, its validation NDCG@10 and, as a check only, its test NDCG@10 |
+| `part2_paired_tests.csv` | the best validation model against every other model: bootstrap intervals, Wilcoxon and Holm-adjusted p-values |
+| `part2_breakdowns.csv`, `part2_breakdown_differences.csv` | metrics per user-activity, item-popularity and test-period group, with intervals and paired differences |
+| `part2_recommendation_profile.csv`, `part2_item_groups.csv` | how popular the recommended movies are, how much of each list goes to tail movies and new releases, and how the relevant test ratings split between head and tail |
+| `part2_biasedmf_rating_error.csv` | BiasedMF's rating error against simple predictors |
+| `part2_sparsity_*.csv` | the 50% and 20% runs: every sample, means and ranks, a paired test of the top two, and the settings re-tuning chose |
+
 Other options:
 
 | Option | Meaning |
@@ -117,10 +147,13 @@ Other options:
 
 ## Random seeds
 
-All randomness comes from one seed, `seed: 42` in `configs/default.yaml`. It
-drives the random baseline, the order used to break tied scores when ranking,
-and the bootstrap resampling of confidence intervals. Models with a random
-component (from Part 2 on) receive the same seed unless their config sets one.
+All randomness comes from seeds in `configs/default.yaml`. `seed: 42` drives
+the random baseline, the order used to break tied scores when ranking, the
+bootstrap resampling of confidence intervals, the random search of Part 2
+and model initialisation during tuning. The two stochastic Part 2 models
+(BiasedMF and BPR-MF) are refitted for the test run with each of
+`part2.test_seeds` (42 to 46), and the sparsity ablation draws its training
+samples with `part2.sparsity.sampling_seeds` (42 to 44).
 
 ## Evaluation protocol
 
@@ -154,6 +187,31 @@ reasoning for each choice and the checks behind it.
 Both are tuned by NDCG@10 on validation; the grids are in
 `configs/default.yaml` under `part1`.
 
+## Part 2 models
+
+All models are our own numpy code; no recommender library is used.
+
+- User-based kNN (`user_knn.py`): each user's k most similar users vote for
+  the movies they rated.
+- Biased matrix factorisation (`matrix_factorization.py`, self-implemented):
+  mu + b_u + b_i + p_u . q_i fitted by mini-batch SGD on the observed ratings.
+- BPR-MF (`bpr.py`, self-implemented): the same kind of factor model trained
+  with the pairwise BPR loss on sampled (user, rated movie, other movie) triples.
+- EASE (`ease.py`): a linear item-item model with a closed-form solution.
+- Content profile (`content_based.py`): matches a user's genre and release
+  decade profile to each movie.
+
+Every model, the Part 1 baselines included, is tuned on validation with the
+search space in `configs/default.yaml` under `part2`: whole grids for the
+models with a few discrete settings, 24 seeded random draws for the two
+gradient-trained models, which also pick their number of epochs on
+validation. Most popular gets eight more variants in Part 2: counting only
+the 10,000 to 300,000 most recent ratings, a window that holds the same
+amount of data at the validation and the test cut, which a window in days
+does not (Part 1, Section 1.6). The sparsity ablation trains on 50% and 20%
+of each user's ratings but keeps the full history out of the recommendation
+lists, so the task stays the same as at 100%.
+
 ## Repository layout
 
 ```text
@@ -166,12 +224,15 @@ recsys/
   data/dataset.py          id maps, sparse matrices, TrainData
   analysis/characterize.py data statistics for report section 1.1
   models/                  recommenders behind one interface (base.py):
-                           popularity.py (most popular, random), item_knn.py
+                           popularity.py (most popular, random), item_knn.py,
+                           user_knn.py, matrix_factorization.py, bpr.py,
+                           ease.py, content_based.py
+  tuning.py                grid and random search, epoch selection on validation
   evaluation/metrics.py    P@k, R@k, NDCG@k, coverage, Gini
   evaluation/evaluator.py  full-catalogue top-k evaluation
-  evaluation/stats.py      bootstrap intervals and paired tests
+  evaluation/stats.py      bootstrap intervals, paired tests, Holm correction
   reporting/               results.csv and workbook writer, template schema, figures
-  experiments/             reproducible Part 1 and Part 2 runners
+  experiments/             one runner per project part (part1.py, part2.py)
 templates/                 the course results template (.xlsm)
 tests/                     unit tests
 data/                      MovieLens goes here (not committed)
@@ -188,6 +249,12 @@ python -m pytest
 The metric tests reproduce the worked example from Lecture 3.1, slide 8, and
 check our NDCG@10 against `sklearn.metrics.ndcg_score` on 500 random rankings.
 The course asks for this kind of check when a team writes its own metrics.
+The Part 2 model tests compare the gradients of BiasedMF and BPR-MF with
+finite differences, check that both learn planted structure, check EASE
+against per-column ridge regression and user-kNN against brute-force voting,
+and reproduce the content profile example of Lecture 2.2, slide 6.
+`tests/test_part2.py` runs the whole Part 2 pipeline on a small synthetic
+dataset.
 
 ## Adding a model
 
@@ -201,55 +268,3 @@ seed. The evaluator handles seen items, the candidate set and the metrics.
 F. Maxwell Harper and Joseph A. Konstan. 2015. The MovieLens Datasets: History
 and Context. ACM Transactions on Interactive Intelligent Systems 5, 4, Article
 19. <https://doi.org/10.1145/2827872>
-
-
-## Part 2: Models and honest comparison
-
-Part 2 is integrated into the original experiment runner; it **does not modify** Part 1.
-The project targets Python 3.10 (see `requirements-lock.txt`).
-
-```bash
-python -m pip install -r requirements-lock.txt
-python run_all.py --data-dir /path/to/ml-1m --parts 1 2
-```
-
-Use `--download` to download MovieLens 1M where network access is permitted,
-and review GroupLens usage terms first. For a small smoke test (not report numbers):
-
-```bash
-python run_all.py --data-dir /path/to/ml-1m --parts 2 --quick --output-dir results-quick
-```
-
-Part 2 adds user-kNN (neighbourhood CF), **self-implemented** biased and
-regularized SGD matrix factorization (latent factors), and genre/release-decade
-content profile matching (content-based). The three paradigms are distinct.
-See `recsys/experiments/part2.py` for the **matched eight-trial validation budget for each of five models** (two trials per model in quick mode), all chosen on validation NDCG@10. Part 1 retains its original 35-trial item-kNN and eight-trial popularity searches; Part 2 adds a *separate*, matched-budget control for both baselines. See the same module for
-training-only median group boundaries and reproducible user-stratified
-100/50/20 percent ablation. The global temporal boundaries, full catalogue,
-positive threshold 4, test set and evaluation code are inherited from Part 1.
-Seeds: 42 by default, including MF initialization/shuffling, tie-breaking,
-bootstrap resampling and ablation subsampling. Validation selects hyperparameters;
-the held-out test scores are **not** used for tuning. Confidence intervals are
-computed over users (95% percentile bootstrap, 1000 resamples by default).
-
-Extra outputs:
-- `results/tables/part2_validation_grid.csv` (all candidates, search budget)
-- `results/tables/part2_selected_models.csv` (selected hyperparameters)
-- `results/tables/part2_test_per_user.csv`
-- `results/tables/part2_paired_comparisons.csv` (paired NDCG difference CIs, including every new model versus both baselines)
-- `results/tables/part2_sparsity_detail.csv` and `part2_sparsity_ranking.csv` (ablation plus model ordering)
-- `results/part2_auto_analysis.md` (full-run numbers and model-order notes, not generated by `--quick`)
-- `results/Recommender_Systems_Results_Group2.xlsm` (official template with Part 2 sheets filled)
-
-The data archive is intentionally not redistributed. Full MovieLens experiment
-results can only be generated after obtaining the dataset and executing the
-command above. Do not submit quick-mode results as the final experiment.
-
-**Note on ablations:** subset construction keeps at least one interaction per
-user and approximately 20/50% within each user, so the global fraction can
-differ slightly from the target. Actual percentages are recorded in the workbook.
-
-**Part 3 track:** set `team.part3_track` in `configs/default.yaml` to A, B or C
-only after the team decides. The field is intentionally left unassigned.
-
-**Submission warning:** the existing Word/PDF report is now a **Part 2 working draft with explicit placeholders**, and the committed workbook still contains only Part 1 results until you execute the full-data command. The report must be completed with real metrics and interpretations before submission. Do not submit the synthetic smoke-test figures or placeholder report text as real findings. An unassigned `team.part3_track` also blocks a complete Part 2 submission.

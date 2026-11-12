@@ -71,8 +71,9 @@ class TrainData:
     cutoff     end of the training period in Unix seconds (exclusive); recency
                based models measure their window back from here
     catalogue  boolean mask over item indices: the candidate set
-    seen       binary user x item matrix of training ratings; these items are
-               never recommended back to the user
+    seen       binary user x item matrix of everything the user rated before
+               the cutoff; these items are never recommended back. Normally the
+               same rows as `ratings`; larger when models train on a subsample
     """
 
     ratings: pd.DataFrame
@@ -95,21 +96,34 @@ class TrainData:
         return to_matrix(rows, self.ids, values)
 
     def history_sizes(self) -> np.ndarray:
-        """Number of training ratings per user index."""
+        """Number of ratings per user index before the cutoff (the seen history)."""
         return np.asarray(self.seen.sum(axis=1)).ravel().astype(np.int64)
 
 
-def make_train_data(ratings: pd.DataFrame, ids: IdMap, cutoff: int, min_item_ratings: int = 1) -> TrainData:
+def make_train_data(
+    ratings: pd.DataFrame,
+    ids: IdMap,
+    cutoff: int,
+    min_item_ratings: int = 1,
+    history: pd.DataFrame | None = None,
+) -> TrainData:
     """Build TrainData, dropping items with fewer than min_item_ratings training ratings.
 
     The candidate set is every movie with at least min_item_ratings ratings in
     the training data. Movies nobody rated before the cutoff cannot be scored
     by a collaborative model, so they are not candidates.
+
+    history is for training on a subsample of what users rated before the
+    cutoff (the Part 2 sparsity ablation). The candidate set and the seen
+    mask then come from the full history, so the evaluation task stays the
+    same while the models see less data. Without it, the history is `ratings`.
     """
-    counts = ratings["item_id"].value_counts()
+    history = ratings if history is None else history
+    counts = history["item_id"].value_counts()
     kept = counts.index[counts >= min_item_ratings]
     ratings = ratings[ratings["item_id"].isin(kept)].reset_index(drop=True)
+    history = history[history["item_id"].isin(kept)]
 
     catalogue = np.zeros(ids.n_items, dtype=bool)
     catalogue[ids.item_index(kept)] = True
-    return TrainData(ratings=ratings, ids=ids, cutoff=cutoff, catalogue=catalogue, seen=to_matrix(ratings, ids))
+    return TrainData(ratings=ratings, ids=ids, cutoff=cutoff, catalogue=catalogue, seen=to_matrix(history, ids))

@@ -1,0 +1,8 @@
+model,params,epochs,validation_ndcg@10,trials,reference
+most_popular,"{""min_rating"": 4, ""window_ratings"": 30000}",,0.16857174809477019,16,False
+item_knn,"{""k"": 500, ""min_rating"": 4, ""similarity"": ""cosine""}",,0.1735488915185037,35,False
+user_knn,"{""k"": 500, ""min_rating"": 4, ""similarity"": ""cosine""}",,0.1704384584529437,24,False
+biased_mf,"{""factors"": 64, ""lr"": 0.012202487834934933, ""reg"": 0.018863670951347982, ""reg_bias"": 0.5577717524433514}",25.0,0.07631299264512205,24,False
+bpr_mf,"{""factors"": 32, ""lr"": 0.012421594505344207, ""min_rating"": 4, ""reg"": 0.008450201302139063}",40.0,0.17772326516494885,24,False
+ease,"{""lam"": 5000, ""min_rating"": 4}",,0.17801886670039108,18,True
+content_profile,"{""match"": ""dot"", ""weighting"": ""centred"", ""year_weight"": 1.0}",,0.02343441600403424,12,False

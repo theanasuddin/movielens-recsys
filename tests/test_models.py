@@ -34,6 +34,17 @@ def test_most_popular_recent_window(tiny_ml, tiny_ids):
     assert _counts(model, tiny_ids, [10, 20, 30, 40, 50]) == [0, 0, 1, 1, 1]
 
 
+def test_most_popular_window_of_recent_ratings(tiny_ml, tiny_ids):
+    # The 3 most recent training ratings are from days 2 and 3: movies 30, 50 and 40.
+    model = MostPopular(window_ratings=3).fit(_train(tiny_ml, tiny_ids))
+    assert _counts(model, tiny_ids, [10, 20, 30, 40, 50]) == [0, 0, 1, 1, 1]
+    assert model.window_size == 3 and model.window_start == T0 + 2 * DAY
+    everything = MostPopular(window_ratings=100).fit(_train(tiny_ml, tiny_ids))
+    assert _counts(everything, tiny_ids, [10, 20, 30, 40, 50, 60]) == [2, 2, 2, 1, 1, 0]
+    with pytest.raises(ValueError):
+        MostPopular(window_days=30, window_ratings=3)
+
+
 def test_most_popular_scores_are_the_same_for_every_user(tiny_ml, tiny_ids):
     model = MostPopular().fit(_train(tiny_ml, tiny_ids))
     scores = model.score(np.array([0, 1, 2]))

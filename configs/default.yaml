@@ -11,7 +11,7 @@ team:
     - "Melek Chelik"
     - "Menaka Wellane Hewage"
   repository: "https://github.com/theanasuddin/movielens-recsys"
-  part3_track: ""    # A, B or C, announced with Part 2
+  part3_track: "A"   # diversity and popularity bias, announced with Part 2
 
 split:
   # "calendar": cut at the two dates below (UTC).
@@ -62,3 +62,67 @@ part1:
     pop_window_days: [null, 90]
     item_thresholds: [1, 10]
     user_thresholds: [1, 20]
+
+part2:
+  # Every model is tuned on the validation period by NDCG@10. A "grid" lists
+  # blocks whose values are crossed; the blocks are then put together. A
+  # "random" space is sampled `random_trials` times with the project seed.
+  random_trials: 24
+  # BiasedMF and BPR-MF pick their number of epochs on validation: they are
+  # checked every `eval_every` epochs and stop after `patience` checks
+  # without improvement, or at `max_epochs`.
+  max_epochs: 40
+  eval_every: 5
+  patience: 2
+  # The two stochastic models are refitted with each seed for the test run.
+  test_seeds: [42, 43, 44, 45, 46]
+  models:
+    most_popular:
+      # Windows in days (as in Part 1) and windows of the most recent
+      # ratings, which hold the same amount of data at both cutoffs.
+      grid:
+        - {window_days: [null, 30, 90, 180], min_rating: [null, 4]}
+        - {window_ratings: [10000, 30000, 100000, 300000], min_rating: [null, 4]}
+    item_knn:
+      grid:
+        - {similarity: [cosine, jaccard], min_rating: [null, 4], k: [10, 20, 50, 100, 200, 500, 1000]}
+        - {similarity: [adjusted_cosine], min_rating: [null], k: [10, 20, 50, 100, 200, 500, 1000]}
+    user_knn:
+      grid:
+        - {similarity: [cosine, jaccard], min_rating: [null, 4], k: [20, 50, 100, 200, 500, 1000]}
+    biased_mf:
+      random:
+        factors: {choice: [16, 32, 64, 128]}
+        lr: {loguniform: [0.005, 0.05]}
+        reg: {loguniform: [0.005, 0.5]}
+        reg_bias: {loguniform: [0.005, 5.0]}
+    bpr_mf:
+      random:
+        factors: {choice: [32, 64, 128]}
+        lr: {loguniform: [0.01, 0.1]}
+        reg: {loguniform: [0.00001, 0.01]}
+        min_rating: {choice: [null, 4]}
+    ease:
+      grid:
+        - {lam: [100, 300, 1000, 2000, 3000, 5000, 10000, 20000, 50000], min_rating: [null, 4]}
+    content_profile:
+      grid:
+        - {weighting: [positive], min_rating: [4], year_weight: [0.0, 0.5, 1.0], match: [cosine, dot]}
+        - {weighting: [centred], year_weight: [0.0, 0.5, 1.0], match: [cosine, dot]}
+  breakdowns:
+    activity_quantiles: [0.3333, 0.6667]   # light / medium / heavy users
+    head_share: 0.10                       # most-rated 10% of movies = head
+  sparsity:
+    fractions: [0.5, 0.2]
+    sampling_seeds: [42, 43, 44]
+    # Re-tuning budget per model and level: the full-data choice plus
+    # random draws from the same space.
+    retune_trials: 8
+  # --quick replaces the settings above with these smaller ones.
+  quick:
+    random_trials: 2
+    max_epochs: 10
+    test_seeds: [42, 43]
+    max_grid: 3
+    sampling_seeds: [42]
+    retune_trials: 2

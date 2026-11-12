@@ -50,6 +50,7 @@ class Config:
     # Model grids and other per-part settings stay as plain dicts. Each part's
     # runner reads what it needs from here.
     part1: dict[str, Any] = field(default_factory=dict)
+    part2: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -85,6 +86,7 @@ def load_config(path: str | Path) -> Config:
     kwargs: dict[str, Any] = {name: _section(cls, raw.get(name)) for name, cls in _SECTIONS.items()}
     kwargs["seed"] = int(raw.get("seed", Config.seed))
     kwargs["part1"] = dict(raw.get("part1") or {})
+    kwargs["part2"] = dict(raw.get("part2") or {})
     config = Config(**kwargs)
 
     if config.split.mode not in {"calendar", "quantile"}:

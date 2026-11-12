@@ -203,3 +203,109 @@ def knn_validation(grid: pd.DataFrame, popularity_best: float, selected: dict, p
     fig.legend(handles, names, loc="upper center", ncol=3, bbox_to_anchor=(0.5, 1.08))
     fig.tight_layout(w_pad=1.5)
     save(fig, path)
+
+
+# --------------------------------------------------------------------------
+# Part 2
+# --------------------------------------------------------------------------
+
+GREY = "#b4b2aa"   # lines that are context, not the point
+
+
+def _dot_rows(ax: plt.Axes, y: np.ndarray, mean, low, high, colour: str, size: float = 4.0) -> None:
+    ax.hlines(y, low, high, color=colour, linewidth=1.2, alpha=0.8)
+    ax.plot(mean, y, "o", color=colour, markersize=size, markeredgecolor="white", markeredgewidth=0.7)
+
+
+def part2_overall(rows: pd.DataFrame, path: Path) -> None:
+    """Figure 3: test NDCG@10 with 95% intervals over users, and catalogue coverage.
+
+    rows: model label, ndcg, ndcg_low, ndcg_high, coverage; drawn best on top.
+    """
+    apply_style()
+    rows = rows.sort_values("ndcg").reset_index(drop=True)
+    y = np.arange(len(rows))
+    fig, (ax_ndcg, ax_cov) = plt.subplots(1, 2, figsize=(FULL_WIDTH, 2.25), sharey=True,
+                                          gridspec_kw={"width_ratios": [2.2, 1]})
+    _dot_rows(ax_ndcg, y, rows["ndcg"], rows["ndcg_low"], rows["ndcg_high"], SERIES[0], size=4.5)
+    for yi, mean, high in zip(y, rows["ndcg"], rows["ndcg_high"]):
+        _note(ax_ndcg, high, yi, f"  {mean:.3f}", va="center")
+    ax_ndcg.set_xlim(0, rows["ndcg_high"].max() * 1.18)
+    ax_ndcg.set_yticks(y, rows["label"])
+    ax_ndcg.grid(axis="y", visible=False)
+    ax_ndcg.set_title("(a) Test NDCG@10, 95% interval over users")
+
+    ax_cov.hlines(y, 0, rows["coverage"], color=AXIS, linewidth=0.8)
+    ax_cov.plot(rows["coverage"], y, "o", color=SERIES[0], markersize=4.5, markeredgecolor="white", markeredgewidth=0.7)
+    ax_cov.set_xlim(0, max(rows["coverage"].max() * 1.2, 0.05))
+    ax_cov.xaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0, decimals=0))
+    ax_cov.grid(axis="y", visible=False)
+    ax_cov.set_title("(b) Catalogue coverage")
+    fig.tight_layout(w_pad=1.5)
+    save(fig, path)
+
+
+def part2_breakdowns(groups: pd.DataFrame, labels: dict[str, str], order: list[str], path: Path) -> None:
+    """Figure 4: test NDCG@10 per group, one panel per breakdown, with 95% intervals."""
+    apply_style()
+    panels = (
+        ("User activity", ["light", "medium", "heavy"], "(a) User activity"),
+        ("Item popularity", ["head"], "(b) Head movies"),
+        ("Item popularity", ["tail"], "(c) Tail movies"),
+        ("Test period", ["early", "late"], "(d) Test period"),
+    )
+    y = np.arange(len(order))
+    fig, axes = plt.subplots(1, len(panels), figsize=(FULL_WIDTH, 2.6), sharey=True)
+    for ax, (dimension, group_names, title) in zip(axes, panels):
+        part = groups[groups["dimension"] == dimension]
+        offsets = np.linspace(-0.2, 0.2, len(group_names)) if len(group_names) > 1 else [0.0]
+        for slot, (group, offset) in enumerate(zip(group_names, offsets)):
+            rows = part[part["group"] == group].set_index("model").reindex(order)
+            _dot_rows(ax, y + offset, rows["ndcg"], rows["ndcg_ci_low"], rows["ndcg_ci_high"], SERIES[slot], size=3.6)
+            ax.plot([], [], "o", color=SERIES[slot], markersize=3.6, label=group)
+        if len(group_names) > 1:
+            ax.legend(loc="lower right", handletextpad=0.2, borderaxespad=0.2)
+        ax.set_xlim(left=0)
+        ax.grid(axis="y", visible=False)
+        ax.set_title(title)
+        ax.set_xlabel("Test NDCG@10")
+        ax.tick_params(axis="x", labelsize=6)
+    axes[0].set_yticks(y, [labels[k] for k in order])
+    fig.tight_layout(w_pad=0.8)
+    save(fig, path)
+
+
+def part2_sparsity(summary: pd.DataFrame, labels: dict[str, str], highlight: list[str], path: Path) -> None:
+    """Figure 5: test NDCG@10 as the training interactions shrink, with the
+    highlighted models in colour and the rest in grey, labelled at the right."""
+    apply_style()
+    levels = [1.0, 0.5, 0.2]
+    x = np.arange(len(levels))
+    fig, ax = plt.subplots(figsize=(4.4, 2.5))
+    ends = []
+    for key in summary["model"].unique():
+        values = summary[summary["model"] == key].set_index("fraction").reindex(levels)["ndcg"].to_numpy()
+        colour = SERIES[highlight.index(key)] if key in highlight else GREY
+        ax.plot(x, values, color=colour, marker="o", markersize=3.5, markeredgecolor="white",
+                markeredgewidth=0.6, linewidth=1.3 if key in highlight else 1.0, zorder=3 if key in highlight else 2)
+        ends.append((values[-1], labels[key]))
+    # Labels at the right end, nudged apart where lines end close together,
+    # with a hairline back to the line when a label had to move.
+    ends.sort()
+    span = summary["ndcg"].max() - summary["ndcg"].min()
+    gap = 0.075 * span
+    placed = []
+    for value, label in ends:
+        position = max(value, placed[-1] + gap) if placed else value
+        placed.append(position)
+        if abs(position - value) > 1e-9:
+            ax.plot([x[-1] + 0.03, x[-1] + 0.12], [value, position], color=AXIS, linewidth=0.5)
+        _note(ax, x[-1] + 0.14, position, label, va="center")
+    ax.set_xticks(x, ["100%", "50%", "20%"])
+    ax.set_xlim(-0.15, x[-1] + 0.9)
+    ax.spines["bottom"].set_bounds(0, x[-1])
+    ax.set_xlabel("Share of training interactions kept")
+    ax.set_ylabel("Test NDCG@10")
+    ax.grid(axis="x", visible=False)
+    fig.tight_layout()
+    save(fig, path)

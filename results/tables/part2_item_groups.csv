@@ -1,0 +1,3 @@
+group,movies,relevant_test_ratings,share_of_relevant_test_ratings,share_of_them_on_newest_releases
+head,369,11017,0.4263214921445709,0.05545974403195062
+tail,3319,14813,0.5732141475118024,0.08843583338959023

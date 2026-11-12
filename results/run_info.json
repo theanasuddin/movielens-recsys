@@ -6,12 +6,12 @@
   ],
   "quick": false,
   "seed": 42,
-  "started_utc": "2026-11-09T20:01:42+00:00",
-  "finished_utc": "2026-11-09T20:05:49+00:00",
+  "started_utc": "2026-11-12T09:38:36+00:00",
+  "finished_utc": "2026-11-12T10:54:13+00:00",
   "timings_seconds": {
-    "loading data": 0.56,
-    "part 1": 64.15,
-    "part 2": 182.76
+    "loading data": 1.13,
+    "part 1": 137.43,
+    "part 2": 4398.03
   },
   "data_md5": {
     "ratings.dat": "a89aa3591bc97d6d4e0c89459ff39362",
@@ -19,8 +19,8 @@
     "users.dat": "681c0711d0d4548cd3d4718a49c2dcd8"
   },
   "environment": {
-    "python": "3.10.22",
-    "platform": "macOS-27.2-arm64-arm-64bit",
+    "python": "3.10.11",
+    "platform": "Windows-10-10.0.19045-SP0",
     "packages": {
       "numpy": "2.2.6",
       "pandas": "2.3.3",
@@ -30,7 +30,7 @@
       "PyYAML": "6.0.3",
       "scikit-learn": "1.7.2"
     },
-    "git_commit": null
+    "git_commit": "ec678eaf328493b80b0aabaf9a1fddc973918216-dirty"
   },
   "config": {
     "seed": 42,
@@ -42,7 +42,7 @@
         "Menaka Wellane Hewage"
       ],
       "repository": "https://github.com/theanasuddin/movielens-recsys",
-      "part3_track": ""
+      "part3_track": "A"
     },
     "split": {
       "mode": "calendar",
@@ -160,6 +160,258 @@
           1,
           20
         ]
+      }
+    },
+    "part2": {
+      "random_trials": 24,
+      "max_epochs": 40,
+      "eval_every": 5,
+      "patience": 2,
+      "test_seeds": [
+        42,
+        43,
+        44,
+        45,
+        46
+      ],
+      "models": {
+        "most_popular": {
+          "grid": [
+            {
+              "window_days": [
+                null,
+                30,
+                90,
+                180
+              ],
+              "min_rating": [
+                null,
+                4
+              ]
+            },
+            {
+              "window_ratings": [
+                10000,
+                30000,
+                100000,
+                300000
+              ],
+              "min_rating": [
+                null,
+                4
+              ]
+            }
+          ]
+        },
+        "item_knn": {
+          "grid": [
+            {
+              "similarity": [
+                "cosine",
+                "jaccard"
+              ],
+              "min_rating": [
+                null,
+                4
+              ],
+              "k": [
+                10,
+                20,
+                50,
+                100,
+                200,
+                500,
+                1000
+              ]
+            },
+            {
+              "similarity": [
+                "adjusted_cosine"
+              ],
+              "min_rating": [
+                null
+              ],
+              "k": [
+                10,
+                20,
+                50,
+                100,
+                200,
+                500,
+                1000
+              ]
+            }
+          ]
+        },
+        "user_knn": {
+          "grid": [
+            {
+              "similarity": [
+                "cosine",
+                "jaccard"
+              ],
+              "min_rating": [
+                null,
+                4
+              ],
+              "k": [
+                20,
+                50,
+                100,
+                200,
+                500,
+                1000
+              ]
+            }
+          ]
+        },
+        "biased_mf": {
+          "random": {
+            "factors": {
+              "choice": [
+                16,
+                32,
+                64,
+                128
+              ]
+            },
+            "lr": {
+              "loguniform": [
+                0.005,
+                0.05
+              ]
+            },
+            "reg": {
+              "loguniform": [
+                0.005,
+                0.5
+              ]
+            },
+            "reg_bias": {
+              "loguniform": [
+                0.005,
+                5.0
+              ]
+            }
+          }
+        },
+        "bpr_mf": {
+          "random": {
+            "factors": {
+              "choice": [
+                32,
+                64,
+                128
+              ]
+            },
+            "lr": {
+              "loguniform": [
+                0.01,
+                0.1
+              ]
+            },
+            "reg": {
+              "loguniform": [
+                1e-05,
+                0.01
+              ]
+            },
+            "min_rating": {
+              "choice": [
+                null,
+                4
+              ]
+            }
+          }
+        },
+        "ease": {
+          "grid": [
+            {
+              "lam": [
+                100,
+                300,
+                1000,
+                2000,
+                3000,
+                5000,
+                10000,
+                20000,
+                50000
+              ],
+              "min_rating": [
+                null,
+                4
+              ]
+            }
+          ]
+        },
+        "content_profile": {
+          "grid": [
+            {
+              "weighting": [
+                "positive"
+              ],
+              "min_rating": [
+                4
+              ],
+              "year_weight": [
+                0.0,
+                0.5,
+                1.0
+              ],
+              "match": [
+                "cosine",
+                "dot"
+              ]
+            },
+            {
+              "weighting": [
+                "centred"
+              ],
+              "year_weight": [
+                0.0,
+                0.5,
+                1.0
+              ],
+              "match": [
+                "cosine",
+                "dot"
+              ]
+            }
+          ]
+        }
+      },
+      "breakdowns": {
+        "activity_quantiles": [
+          0.3333,
+          0.6667
+        ],
+        "head_share": 0.1
+      },
+      "sparsity": {
+        "fractions": [
+          0.5,
+          0.2
+        ],
+        "sampling_seeds": [
+          42,
+          43,
+          44
+        ],
+        "retune_trials": 8
+      },
+      "quick": {
+        "random_trials": 2,
+        "max_epochs": 10,
+        "test_seeds": [
+          42,
+          43
+        ],
+        "max_grid": 3,
+        "sampling_seeds": [
+          42
+        ],
+        "retune_trials": 2
       }
     }
   }

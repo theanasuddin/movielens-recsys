@@ -46,6 +46,27 @@ def wilcoxon_signed_rank(a: np.ndarray, b: np.ndarray) -> tuple[float, float]:
     """Wilcoxon signed-rank test on paired per-user values. Returns (statistic, p-value).
 
     Users with identical values for both models are dropped (zero_method="wilcox").
+    If every user is tied there is nothing to test and the p-value is 1.
     """
+    a, b = np.asarray(a, dtype=np.float64), np.asarray(b, dtype=np.float64)
+    if np.allclose(a, b):
+        return 0.0, 1.0
     result = stats.wilcoxon(a, b, zero_method="wilcox", alternative="two-sided")
     return float(result.statistic), float(result.pvalue)
+
+
+def holm(p_values: np.ndarray) -> np.ndarray:
+    """Holm-Bonferroni adjusted p-values, in the input order.
+
+    The smallest p-value is multiplied by m, the next by m - 1, and so on,
+    keeping the adjusted values non-decreasing. Comparing each adjusted value
+    with 0.05 controls the chance of any false positive in the family.
+    """
+    p = np.asarray(p_values, dtype=np.float64)
+    m = p.size
+    adjusted = np.empty(m)
+    running = 0.0
+    for rank, idx in enumerate(np.argsort(p)):
+        running = max(running, (m - rank) * p[idx])
+        adjusted[idx] = min(1.0, running)
+    return adjusted

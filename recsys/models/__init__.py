@@ -5,11 +5,13 @@ from __future__ import annotations
 from typing import Any
 
 from recsys.models.base import Recommender
+from recsys.models.bpr import BPRMF
+from recsys.models.content_based import ContentProfile
+from recsys.models.ease import EASE
 from recsys.models.item_knn import ItemKNN
+from recsys.models.matrix_factorization import BiasedMF
 from recsys.models.popularity import MostPopular, RandomRecommender
 from recsys.models.user_knn import UserKNN
-from recsys.models.matrix_factorization import BiasedMF
-from recsys.models.content_based import ContentProfile
 
 MODELS: dict[str, type[Recommender]] = {
     "random": RandomRecommender,
@@ -17,6 +19,8 @@ MODELS: dict[str, type[Recommender]] = {
     "item_knn": ItemKNN,
     "user_knn": UserKNN,
     "biased_mf": BiasedMF,
+    "bpr_mf": BPRMF,
+    "ease": EASE,
     "content_profile": ContentProfile,
 }
 
@@ -35,4 +39,7 @@ def build_model(name: str, default_seed: int | None = None, **params: Any) -> Re
     return cls(**params)
 
 
-__all__ = ["MODELS", "ItemKNN", "MostPopular", "RandomRecommender", "Recommender", "build_model"]
+__all__ = [
+    "BPRMF", "EASE", "MODELS", "BiasedMF", "ContentProfile", "ItemKNN", "MostPopular",
+    "RandomRecommender", "Recommender", "UserKNN", "build_model",
+]
