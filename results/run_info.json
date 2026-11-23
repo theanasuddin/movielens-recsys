@@ -2,16 +2,18 @@
   "config_file": "configs/default.yaml",
   "parts": [
     1,
-    2
+    2,
+    3
   ],
   "quick": false,
   "seed": 42,
-  "started_utc": "2026-11-12T09:38:36+00:00",
-  "finished_utc": "2026-11-12T10:54:13+00:00",
+  "started_utc": "2026-11-21T17:49:41+00:00",
+  "finished_utc": "2026-11-21T20:11:43+00:00",
   "timings_seconds": {
-    "loading data": 1.13,
-    "part 1": 137.43,
-    "part 2": 4398.03
+    "loading data": 1.59,
+    "part 1": 216.09,
+    "part 2": 8273.42,
+    "part 3": 29.28
   },
   "data_md5": {
     "ratings.dat": "a89aa3591bc97d6d4e0c89459ff39362",
@@ -30,7 +32,7 @@
       "PyYAML": "6.0.3",
       "scikit-learn": "1.7.2"
     },
-    "git_commit": "ec678eaf328493b80b0aabaf9a1fddc973918216-dirty"
+    "git_commit": "ddd4f099ec41c7569b55c43f94eb36e52a6b02d0-dirty"
   },
   "config": {
     "seed": 42,
@@ -413,6 +415,21 @@
         ],
         "retune_trials": 2
       }
+    },
+    "part3": {
+      "ease_lam": 5000,
+      "ease_min_rating": 4,
+      "candidate_pool": 100,
+      "lambdas": [
+        1.0,
+        0.9,
+        0.75,
+        0.5,
+        0.25,
+        0.1,
+        0.0
+      ],
+      "max_relative_ndcg_drop": 0.02
     }
   }
 }

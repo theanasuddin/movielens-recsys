@@ -51,6 +51,7 @@ class Config:
     # runner reads what it needs from here.
     part1: dict[str, Any] = field(default_factory=dict)
     part2: dict[str, Any] = field(default_factory=dict)
+    part3: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -87,8 +88,11 @@ def load_config(path: str | Path) -> Config:
     kwargs["seed"] = int(raw.get("seed", Config.seed))
     kwargs["part1"] = dict(raw.get("part1") or {})
     kwargs["part2"] = dict(raw.get("part2") or {})
+    kwargs["part3"] = dict(raw.get("part3") or {})
     config = Config(**kwargs)
 
     if config.split.mode not in {"calendar", "quantile"}:
         raise ValueError(f"split.mode must be 'calendar' or 'quantile', got {config.split.mode!r}")
     return config
+
+

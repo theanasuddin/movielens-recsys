@@ -22,3 +22,18 @@ results-quick/
 .DS_Store
 Thumbs.db
 ~$*
+
+# Local Python environment
+.venv310/
+
+# Raw MovieLens dataset files
+/movies.dat
+/ratings.dat
+/users.dat
+
+# Local archives and temporary files
+/recsys.rar
+/README
+
+# Duplicate Part 3 experiment outputs
+/results-part3/

@@ -9,7 +9,7 @@ Team: Anas Uddin, Melek Chelik, Menaka Wellane Hewage.
 | --- | --- | --- |
 | 1 | Data, protocol, baselines | done |
 | 2 | Models and honest comparison | done |
-| 3 | Beyond accuracy, Track A (diversity and popularity bias) | not started |
+| 3 | Beyond accuracy, Track A (diversity and popularity bias) | done |
 
 ## What to grade
 
@@ -211,6 +211,45 @@ amount of data at the validation and the test cut, which a window in days
 does not (Part 1, Section 1.6). The sparsity ablation trains on 50% and 20%
 of each user's ratings but keeps the full history out of the recommendation
 lists, so the task stays the same as at 100%.
+
+
+## Part 3 diversity and popularity bias
+
+Part 3 uses EASE (regularization 5000, positive ratings >= 4)
+as the base recommender and applies genre-based maximal marginal
+relevance (MMR) to its Top-100 candidate movies.
+
+Item distance: 1 - cosine similarity between 18-dimensional
+binary genre vectors.
+
+The MMR lambda sweep is:
+1.0, 0.9, 0.75, 0.5, 0.25, 0.1, 0.0.
+
+Lambda = 0.75 was selected on validation with a maximum
+relative NDCG@10 loss tolerance of 2%.
+
+At lambda = 0.75 on test:
+- NDCG@10: 0.2185 -> 0.2163
+- Intra-list diversity: 0.7008 -> 0.7644
+- Catalogue coverage: 10.03% -> 9.92%
+- Gini: 0.9693 -> 0.9696
+- Calibration error: 0.1548 -> 0.1411
+
+To reproduce only Part 3:
+
+    python run_all.py --parts 3 --output-dir results-part3
+
+To reproduce all three parts:
+
+    python run_all.py --parts 1 2 3 --output-dir results
+
+Part 3 produces validation and test tables, user-group analysis,
+movie-exposure analysis, and Figures 6-9.
+
+The results workbook contains the "Part 3A - Diversity" sheet.
+
+## Repository layout
+
 
 ## Repository layout
 
