@@ -4,10 +4,9 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-import pytest
 
 from recsys.config import EvaluationConfig, load_config
-from recsys.data import IdMap, MovieLens, make_train_data
+from recsys.data import IdMap, make_train_data
 from recsys.evaluation import evaluate, holm, metrics_against, relevance_matrix
 from recsys.experiments import RunContext, part2
 from recsys.models import BPRMF, MostPopular
@@ -68,34 +67,6 @@ def test_run_trial_picks_the_best_checked_epoch():
 
 
 # ---------------------------------------------------------------- runner
-
-@pytest.fixture
-def synthetic_ml() -> MovieLens:
-    """60 users and 40 movies with ratings spread over the train, validation and test periods."""
-    rng = np.random.default_rng(3)
-    start, end = pd.Timestamp("2000-06-01", tz="UTC").timestamp(), pd.Timestamp("2002-06-01", tz="UTC").timestamp()
-    taste = rng.normal(size=(60, 3)) @ rng.normal(size=(3, 40))
-    rows = []
-    for user in range(1, 61):
-        items = rng.choice(40, size=20, replace=False)
-        times = np.sort(rng.uniform(start, end, size=20)).astype(np.int64)
-        for item, t in zip(items, times):
-            stars = int(np.clip(np.round(3.5 + taste[user - 1, item]), 1, 5))
-            rows.append((user, item + 1, stars, t))
-    ratings = pd.DataFrame(rows, columns=["user_id", "item_id", "rating", "timestamp"]).astype(
-        {"user_id": "int32", "item_id": "int32", "rating": "int8", "timestamp": "int64"})
-    genres = ["Action", "Comedy", "Drama|Romance", "Action|Thriller", "Children's|Animation"]
-    movies = pd.DataFrame({
-        "item_id": pd.Series(range(1, 41), dtype="int32"),
-        "title": [f"Movie {i} ({1960 + i})" for i in range(1, 41)],
-        "year": pd.Series([1960 + i for i in range(1, 41)], dtype="Int16"),
-        "genres": [genres[i % len(genres)] for i in range(40)],
-    })
-    users = pd.DataFrame({"user_id": pd.Series(range(1, 61), dtype="int32"), "gender": "F",
-                          "age": pd.Series([25] * 60, dtype="int8"), "occupation": pd.Series([1] * 60, dtype="int8"),
-                          "zip": "00000"})
-    return MovieLens(ratings, movies, users)
-
 
 def test_part2_runner_end_to_end(synthetic_ml, tmp_path):
     config = load_config(REPO_ROOT / "configs" / "default.yaml")

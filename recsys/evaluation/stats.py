@@ -42,6 +42,42 @@ def paired_bootstrap_diff(a: np.ndarray, b: np.ndarray, n_samples: int, confiden
     return bootstrap_ci(a - b, n_samples, confidence, seed)
 
 
+def bootstrap_ratio(numerator: np.ndarray, denominator: np.ndarray, n_samples: int, confidence: float,
+                    seed: int) -> Interval:
+    """Interval for sum(numerator) / sum(denominator) with users as the unit of
+    resampling, such as the share of swapped-in movies that were relevant."""
+    numerator, denominator = np.asarray(numerator, dtype=np.float64), np.asarray(denominator, dtype=np.float64)
+    rng = np.random.default_rng(seed)
+    idx = rng.integers(0, numerator.size, size=(n_samples, numerator.size))
+    totals = denominator[idx].sum(axis=1)
+    ratios = np.divide(numerator[idx].sum(axis=1), totals, out=np.full(n_samples, np.nan), where=totals > 0)
+    alpha = (1 - confidence) / 2
+    return Interval(float(numerator.sum() / denominator.sum()), float(np.nanquantile(ratios, alpha)),
+                    float(np.nanquantile(ratios, 1 - alpha)), confidence)
+
+
+def bootstrap_system_diff(lists_a: np.ndarray, lists_b: np.ndarray, statistic, n_samples: int,
+                          confidence: float, seed: int) -> Interval:
+    """Interval for statistic(a) - statistic(b) when the statistic belongs to
+    the whole set of lists, such as coverage or the Gini index.
+
+    Row i of lists_a and lists_b belongs to the same user; each resample draws
+    users with replacement and recomputes both statistics on the same users.
+    The mean of the Interval is the difference on the full set of users.
+    """
+    lists_a, lists_b = np.asarray(lists_a), np.asarray(lists_b)
+    if len(lists_a) != len(lists_b):
+        raise ValueError("Paired comparison needs one list per user for both settings")
+    rng = np.random.default_rng(seed)
+    diffs = np.empty(n_samples)
+    for s in range(n_samples):
+        idx = rng.integers(0, len(lists_a), size=len(lists_a))
+        diffs[s] = statistic(lists_a[idx]) - statistic(lists_b[idx])
+    alpha = (1 - confidence) / 2
+    return Interval(float(statistic(lists_a) - statistic(lists_b)), float(np.quantile(diffs, alpha)),
+                    float(np.quantile(diffs, 1 - alpha)), confidence)
+
+
 def wilcoxon_signed_rank(a: np.ndarray, b: np.ndarray) -> tuple[float, float]:
     """Wilcoxon signed-rank test on paired per-user values. Returns (statistic, p-value).
 

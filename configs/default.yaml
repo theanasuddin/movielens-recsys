@@ -127,13 +127,23 @@ part2:
     sampling_seeds: [42]
     retune_trials: 2
 
-# Part 3: Diversity and Popularity Bias
+# Part 3, Track A: diversity and popularity bias (Lecture 5.1). MMR re-ranks
+# each user's top candidates from the best Part 2 model by genre similarity.
 part3:
-  ease_lam: 5000
-  ease_min_rating: 4
-
+  # The EASE setting Part 2 chose on validation; the runner checks it against
+  # results/tables/part2_selected.csv when that file exists.
+  base_model: {lam: 5000, min_rating: 4}
+  # MMR re-ranks each user's top candidate_pool movies into the top 10.
   candidate_pool: 100
-
-  lambdas: [1.0, 0.9, 0.75, 0.5, 0.25, 0.1, 0.0]
-
+  # lambda runs from 0 to 1 in these steps; lambda = 1 is plain EASE.
+  lambda_step: 0.05
+  # Pool sizes for the ablation on test (the main pool must be one of them).
+  pool_sizes: [10, 20, 50, 100, 200, 500, 1000]
+  # lambda is chosen on validation: the highest intra-list diversity whose
+  # NDCG@10 stays within this relative loss of plain EASE.
   max_relative_ndcg_drop: 0.02
+  # --quick replaces the settings above with these smaller ones.
+  quick:
+    lambdas: [0.0, 0.5, 1.0]
+    pool: 20
+    pool_sizes: [10, 20]

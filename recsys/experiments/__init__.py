@@ -1,16 +1,8 @@
 """One runner per project part. run_all.py calls them in order."""
 
-
-"""One runner per project part. run_all.py calls them in order."""
-
 from recsys.experiments import part1, part2, part3
 from recsys.experiments.context import RunContext
 
-PARTS = {
-    1: part1.run,
-    2: part2.run,
-    3: part3.run,
-}
+PARTS = {1: part1.run, 2: part2.run, 3: part3.run}
 
 __all__ = ["PARTS", "RunContext"]
-

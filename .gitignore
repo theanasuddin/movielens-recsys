@@ -2,7 +2,7 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
-.venv/
+.venv*/
 venv/
 *.egg-info/
 
@@ -11,10 +11,11 @@ venv/
 data/*
 !data/README.md
 *.zip
+*.dat
 
 # Run outputs that are not part of the submission
 results/logs/
-results-quick/
+results-*/
 
 # Editors and OS
 .vscode/
@@ -22,18 +23,3 @@ results-quick/
 .DS_Store
 Thumbs.db
 ~$*
-
-# Local Python environment
-.venv310/
-
-# Raw MovieLens dataset files
-/movies.dat
-/ratings.dat
-/users.dat
-
-# Local archives and temporary files
-/recsys.rar
-/README
-
-# Duplicate Part 3 experiment outputs
-/results-part3/

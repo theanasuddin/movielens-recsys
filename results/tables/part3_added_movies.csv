@@ -1,0 +1,31 @@
+lambda,movie_id,title,genres,lists_added_to,training_ratings,tail
+0.7,1266,Unforgiven (1992),Western,54,927,False
+0.7,541,Blade Runner (1982),Film-Noir|Sci-Fi,48,1741,False
+0.7,1258,"Shining, The (1980)",Horror,44,1014,False
+0.7,246,Hoop Dreams (1994),Documentary,38,692,True
+0.7,1,Toy Story (1995),Animation|Children's|Comedy,35,2032,False
+0.7,2987,Who Framed Roger Rabbit? (1988),Adventure|Animation|Film-Noir,33,1742,False
+0.7,919,"Wizard of Oz, The (1939)",Adventure|Children's|Drama|Musical,32,1660,False
+0.7,750,Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb (1963),Sci-Fi|War,29,1302,False
+0.7,913,"Maltese Falcon, The (1941)",Film-Noir|Mystery,29,1000,False
+0.7,1097,E.T. the Extra-Terrestrial (1982),Children's|Drama|Fantasy|Sci-Fi,29,2197,False
+0.7,2716,Ghostbusters (1984),Comedy|Horror,27,2116,False
+0.7,2762,"Sixth Sense, The (1999)",Thriller,26,2366,False
+0.7,3499,Misery (1990),Horror,26,841,False
+0.7,364,"Lion King, The (1994)",Animation|Children's|Musical,21,1074,False
+0.7,1617,L.A. Confidential (1997),Crime|Film-Noir|Mystery|Thriller,21,2240,False
+0.5,1266,Unforgiven (1992),Western,188,927,False
+0.5,246,Hoop Dreams (1994),Documentary,160,692,True
+0.5,1258,"Shining, The (1980)",Horror,135,1014,False
+0.5,913,"Maltese Falcon, The (1941)",Film-Noir|Mystery,88,1000,False
+0.5,364,"Lion King, The (1994)",Animation|Children's|Musical,76,1074,False
+0.5,2987,Who Framed Roger Rabbit? (1988),Adventure|Animation|Film-Noir,76,1742,False
+0.5,541,Blade Runner (1982),Film-Noir|Sci-Fi,75,1741,False
+0.5,3499,Misery (1990),Horror,55,841,False
+0.5,1035,"Sound of Music, The (1965)",Musical,52,836,False
+0.5,750,Dr. Strangelove or: How I Learned to Stop Worrying and Love the Bomb (1963),Sci-Fi|War,48,1302,False
+0.5,919,"Wizard of Oz, The (1939)",Adventure|Children's|Drama|Musical,48,1660,False
+0.5,1,Toy Story (1995),Animation|Children's|Comedy,43,2032,False
+0.5,2580,Go (1999),Crime,43,688,True
+0.5,2762,"Sixth Sense, The (1999)",Thriller,43,2366,False
+0.5,1097,E.T. the Extra-Terrestrial (1982),Children's|Drama|Fantasy|Sci-Fi,40,2197,False

@@ -94,5 +94,3 @@ def load_config(path: str | Path) -> Config:
     if config.split.mode not in {"calendar", "quantile"}:
         raise ValueError(f"split.mode must be 'calendar' or 'quantile', got {config.split.mode!r}")
     return config
-
-

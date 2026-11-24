@@ -17,8 +17,9 @@ Everything handed in is in this repository:
 
 | What | Where |
 | --- | --- |
-| Report (Part 2 version, 8 pages plus references) | [report/Group2_Recommender_Systems_Report.pdf](report/Group2_Recommender_Systems_Report.pdf), Word file: [report/Group2_Recommender_Systems_Report.docx](report/Group2_Recommender_Systems_Report.docx) |
-| Results in the course results template | [results/Recommender_Systems_Results_Group2.xlsm](results/Recommender_Systems_Results_Group2.xlsm), sheets "Part 1 - Baselines", "Part 2 - Models", "Part 2 - Disaggregated" and "Part 2 - Sparsity" |
+| Report (final version, 11 pages plus references) | [report/Group2_Recommender_Systems_Report.pdf](report/Group2_Recommender_Systems_Report.pdf), Word file: [report/Group2_Recommender_Systems_Report.docx](report/Group2_Recommender_Systems_Report.docx) |
+| Slides for the Week 7 examination | [report/Group2_Presentation.pdf](report/Group2_Presentation.pdf), PowerPoint file: [report/Group2_Presentation.pptx](report/Group2_Presentation.pptx) |
+| Results in the course results template | [results/Recommender_Systems_Results_Group2.xlsm](results/Recommender_Systems_Results_Group2.xlsm), sheets "Part 1 - Baselines", "Part 2 - Models", "Part 2 - Disaggregated", "Part 2 - Sparsity" and "Part 3A - Diversity" |
 | The same results, machine-readable | [results/results.csv](results/results.csv) |
 | Figures used in the report | [results/figures/](results/figures/) |
 | Tables behind every number in the report | [results/tables/](results/tables/) |
@@ -31,6 +32,18 @@ which is in the history at commit `ec678ea`
 (`git show ec678ea:results/tables/part2_sparsity_ranking.csv`).
 In the workbook, the Notes and "Variability / CI / test" columns hold the
 intervals, seeds and paired tests behind each row.
+
+Where each Part 3 requirement (Track A) of the project description is answered:
+
+| Requirement | Report | Code and outputs |
+| --- | --- | --- |
+| The best Part 2 model as the base recommender | Section 3.2 | `part3.base_model` in `configs/default.yaml`, checked against `results/tables/part2_selected.csv` |
+| One re-ranking intervention: MMR (Lecture 5.1, slide 9), verified | Sections 3.2 and 3.3 | `recsys/reranking/mmr.py`; `tests/test_part3.py` reproduces the worked examples of slides 8, 9 and 11 |
+| Genre vectors as the item representation, and the exact item distance | Section 3.2 | 18 binary genre indicators, distance 1 - cosine; `recsys/evaluation/diversity.py` |
+| Sweep of the trade-off parameter and the accuracy-diversity frontier as a curve | Section 3.3, Figure 6 | `results/tables/part3_sweep.csv`, `part3_differences.csv` |
+| Intra-list diversity, catalogue coverage, Gini and calibration error | Section 3.3, Table 4 | `part3_sweep.csv`, with 95% intervals for every change in `part3_differences.csv` |
+| What is gained and lost, and who bears the cost | Section 3.4, Table 5 | `part3_who_pays.csv`, `part3_genre_exposure.csv`, `part3_exposure.csv`, `part3_added_movies.csv` |
+| One number we cannot explain | Section 3.5 | `part3_who_pays.csv` |
 
 Where each Part 2 requirement of the project description is answered:
 
@@ -100,14 +113,16 @@ python run_all.py --data-dir data/ml-1m
 
 The dataset path can point anywhere; nothing in the code depends on where the
 files live. A full run takes about 75 minutes on a laptop, almost all of it
-Part 2 (`--parts 1` runs Part 1 alone in about two and a half minutes), and
-writes:
+Part 2. `--parts 1` runs Part 1 alone in about two and a half minutes and
+`--parts 3` runs Part 3 alone in under a minute; give a separate
+`--output-dir` for these, because results.csv then holds only those parts.
+The full run writes:
 
 | Output | Content |
 | --- | --- |
 | `results/results.csv` | machine-readable results, one row per template row, with a `Sheet` column |
 | `results/Recommender_Systems_Results_Group2.xlsm` | the course results template, filled in |
-| `results/figures/` | `fig1_data_overview.png`, `fig2_itemknn_validation.png`, `fig3_part2_models.png`, `fig4_part2_breakdowns.png` and `fig5_part2_sparsity.png` (Figures 1 to 5 of the report), plus `rating_distribution.png` |
+| `results/figures/` | `fig1_data_overview.png`, `fig2_itemknn_validation.png`, `fig3_part2_models.png`, `fig4_part2_breakdowns.png`, `fig5_part2_sparsity.png` and `fig6_part3_frontier.png` (the figures of the report), plus `rating_distribution.png` |
 | `results/tables/` | everything behind the numbers quoted in the report (see below) |
 | `results/run_info.json` | seed, resolved config, package versions, git commit, data checksums and timings |
 
@@ -134,6 +149,17 @@ And for Part 2:
 | `part2_recommendation_profile.csv`, `part2_item_groups.csv` | how popular the recommended movies are, how much of each list goes to tail movies and new releases, and how the relevant test ratings split between head and tail |
 | `part2_biasedmf_rating_error.csv` | BiasedMF's rating error against simple predictors |
 | `part2_sparsity_*.csv` | the 50% and 20% runs: every sample, means and ranks, a paired test of the top two, and the settings re-tuning chose |
+
+And for Part 3:
+
+| File | Content |
+| --- | --- |
+| `part3_sweep.csv` | every lambda on validation and test: accuracy, intra-list diversity by genre and by who rated the movies, coverage, Gini, calibration error and its two parts, novelty, tail share, how deep into the pool MMR reached, time per list; the lambda chosen on validation is marked |
+| `part3_differences.csv` | every test lambda minus plain EASE, with 95% intervals (paired bootstrap over users; resampled users for coverage and Gini) |
+| `part3_pool_sizes.csv` | the same sweep on test with pools of 10 to 1,000 candidates |
+| `part3_who_pays.csv` | the change per user group (activity, taste breadth), and how often the movies MMR dropped and brought in were relevant |
+| `part3_genre_exposure.csv`, `part3_exposure.csv`, `part3_added_movies.csv` | slots per genre, how exposure spreads over movies, and the movies MMR adds most often |
+| `part3_test_per_user.csv`, `part3_recommendations.csv` | per-user test values for plain EASE, the chosen lambda, 0.5 and 0, and the lists of plain EASE and of the chosen lambda with titles |
 
 Other options:
 
@@ -212,44 +238,31 @@ does not (Part 1, Section 1.6). The sparsity ablation trains on 50% and 20%
 of each user's ratings but keeps the full history out of the recommendation
 lists, so the task stays the same as at 100%.
 
+## Part 3 re-ranking
 
-## Part 3 diversity and popularity bias
+Track A, diversity and popularity bias. The base recommender is EASE with the
+setting Part 2 chose (lambda = 5000, ratings of 4 and 5). For every evaluated
+user it retrieves the top 100 movies under the Part 1 rules, and maximal
+marginal relevance (`recsys/reranking/mmr.py`, Lecture 5.1, slide 9) picks the
+final ten, each time maximising
 
-Part 3 uses EASE (regularization 5000, positive ratings >= 4)
-as the base recommender and applies genre-based maximal marginal
-relevance (MMR) to its Top-100 candidate movies.
+    lambda * relevance - (1 - lambda) * max similarity to the movies already picked
 
-Item distance: 1 - cosine similarity between 18-dimensional
-binary genre vectors.
+Relevance is the EASE score, min-max scaled within each user's pool; the
+similarity is the cosine of the 18 binary genre vectors, so the item distance
+is 1 - cosine. lambda = 1 gives back plain EASE (the run checks this list by
+list) and lambda runs from 0 to 1 in steps of 0.05. lambda is chosen on
+validation, where EASE is fitted on the training period only: the highest
+intra-list diversity whose NDCG@10 stays within 2% of plain EASE. The test
+period sees every lambda, but chooses nothing.
 
-The MMR lambda sweep is:
-1.0, 0.9, 0.75, 0.5, 0.25, 0.1, 0.0.
-
-Lambda = 0.75 was selected on validation with a maximum
-relative NDCG@10 loss tolerance of 2%.
-
-At lambda = 0.75 on test:
-- NDCG@10: 0.2185 -> 0.2163
-- Intra-list diversity: 0.7008 -> 0.7644
-- Catalogue coverage: 10.03% -> 9.92%
-- Gini: 0.9693 -> 0.9696
-- Calibration error: 0.1548 -> 0.1411
-
-To reproduce only Part 3:
-
-    python run_all.py --parts 3 --output-dir results-part3
-
-To reproduce all three parts:
-
-    python run_all.py --parts 1 2 3 --output-dir results
-
-Part 3 produces validation and test tables, user-group analysis,
-movie-exposure analysis, and Figures 6-9.
-
-The results workbook contains the "Part 3A - Diversity" sheet.
-
-## Repository layout
-
+Besides the four measures the brief asks for (intra-list diversity, coverage,
+Gini, calibration error), the run records novelty, the share of tail movies, a
+second intra-list diversity over who rated the movies, how deep into the pool
+MMR reaches, a pool-size ablation from 10 to 1,000 candidates, and who gains
+and loses: users by activity and by the breadth of their taste, movies by
+genre. Part 3 has no random component apart from the project seed used for
+ties and bootstrap intervals.
 
 ## Repository layout
 
@@ -267,11 +280,13 @@ recsys/
                            user_knn.py, matrix_factorization.py, bpr.py,
                            ease.py, content_based.py
   tuning.py                grid and random search, epoch selection on validation
+  reranking/mmr.py         maximal marginal relevance, one list or many at once
   evaluation/metrics.py    P@k, R@k, NDCG@k, coverage, Gini
+  evaluation/diversity.py  intra-list diversity, calibration error, novelty
   evaluation/evaluator.py  full-catalogue top-k evaluation
   evaluation/stats.py      bootstrap intervals, paired tests, Holm correction
   reporting/               results.csv and workbook writer, template schema, figures
-  experiments/             one runner per project part (part1.py, part2.py)
+  experiments/             one runner per project part (part1.py, part2.py, part3.py)
 templates/                 the course results template (.xlsm)
 tests/                     unit tests
 data/                      MovieLens goes here (not committed)
@@ -292,8 +307,11 @@ The Part 2 model tests compare the gradients of BiasedMF and BPR-MF with
 finite differences, check that both learn planted structure, check EASE
 against per-column ridge regression and user-kNN against brute-force voting,
 and reproduce the content profile example of Lecture 2.2, slide 6.
-`tests/test_part2.py` runs the whole Part 2 pipeline on a small synthetic
-dataset.
+The Part 3 tests reproduce the worked examples of Lecture 5.1: the intra-list
+diversity of slide 8, the MMR list {i1, i2, i3} of slide 9 with its 0.33 to
+0.60 diversity, and the calibration error of the 70/30 user of slide 11.
+`tests/test_part2.py` and `tests/test_part3.py` run the whole Part 2 and
+Part 3 pipelines on a small synthetic dataset.
 
 ## Adding a model
 

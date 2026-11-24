@@ -309,3 +309,89 @@ def part2_sparsity(summary: pd.DataFrame, labels: dict[str, str], highlight: lis
     ax.grid(axis="x", visible=False)
     fig.tight_layout()
     save(fig, path)
+
+
+def part3_frontier(main: pd.DataFrame, diffs: pd.DataFrame, pools: pd.DataFrame, chosen: float, path: Path) -> None:
+    """Figure 6: (a) test NDCG@10 against intra-list diversity over the lambda
+    sweep, with 95% intervals for the change from plain EASE; (b) calibration
+    error against lambda, split into the part from genres the lists
+    under-serve and the part from genres they over-serve; (c) catalogue
+    coverage against lambda per pool size.
+
+    main: the test sweep on the main pool; diffs: part3_differences;
+    pools: the pool-size ablation.
+    """
+    apply_style()
+    fig, axes = plt.subplots(1, 3, figsize=(FULL_WIDTH, 2.35), gridspec_kw={"width_ratios": [1.3, 1, 1]})
+    m = main.sort_values("lambda", ascending=False).reset_index(drop=True)
+    d = diffs.set_index("lambda").reindex(m["lambda"])
+    base = m.loc[m["lambda"] == 1.0, "ndcg"].item()
+    marks = {1.0: SERIES[0], chosen: SERIES[1]}
+
+    ax = axes[0]
+    ax.vlines(m["ild"], base + d["ndcg_ci_low"].fillna(0), base + d["ndcg_ci_high"].fillna(0),
+              color=AXIS, linewidth=0.8, zorder=1)
+    ax.plot(m["ild"], m["ndcg"], color=GREY, linewidth=1.0, marker="o", markersize=2.6, markerfacecolor=GREY,
+            markeredgecolor="white", markeredgewidth=0.4, zorder=2)
+    for lam, colour in marks.items():
+        row = m[m["lambda"] == lam].iloc[0]
+        ax.plot(row["ild"], row["ndcg"], "o", color=colour, markersize=4.2, markeredgecolor="white",
+                markeredgewidth=0.6, zorder=3)
+    for lam in sorted({1.0, chosen, 0.5, 0.25, 0.0} & set(m["lambda"]), reverse=True):
+        row = m[m["lambda"] == lam].iloc[0]
+        if lam == 1.0:     # above the point, clear of the flat stretch of the curve
+            _note(ax, row["ild"], row["ndcg"] + 0.0012, "plain EASE (λ = 1)", va="bottom")
+        elif lam == chosen:  # below and left of the point, where the curve leaves empty space
+            _note(ax, row["ild"] - 0.004, row["ndcg"] - 0.0015, f"λ = {lam:g}\n(chosen)", va="top", ha="right")
+        else:
+            _note(ax, row["ild"] + 0.008, row["ndcg"] + 0.001, f"λ = {lam:g}")
+    ax.set_xlim(m["ild"].min() - 0.02, m["ild"].max() + 0.09)
+    ax.set_ylim(top=m["ndcg"].max() + 0.0055)
+    ax.set_xlabel("Intra-list diversity (1 − genre cosine)")
+    ax.set_ylabel("Test NDCG@10")
+    ax.set_title("(a) Accuracy against genre diversity")
+
+    ax = axes[1]
+    ax.plot(m["lambda"], m["calibration"], color=SERIES[0], marker="o", markersize=2.6, markeredgecolor="white",
+            markeredgewidth=0.4)
+    left = m.sort_values("lambda").iloc[0]          # lambda = 0, the right end of the inverted axis
+    for column, text in (("calibration_under", "under-served\ngenres"), ("calibration_over", "over-served\ngenres")):
+        ax.plot(m["lambda"], m[column], color=GREY, linewidth=1.0)
+        _note(ax, -0.03, left[column], text, va="center")
+    _note(ax, -0.03, left["calibration"], "total", va="center")
+    ax.axvline(chosen, color=SERIES[1], linewidth=0.8, linestyle=(0, (2, 2)))
+    _note(ax, chosen, m["calibration"].max(), " chosen λ", va="top")
+    ax.set_xlim(1.03, -0.4)
+    ax.spines["bottom"].set_bounds(1.0, 0.0)
+    ax.set_xlabel("λ (1 = plain EASE)")
+    ax.set_ylabel("Calibration error (JSD, bits)")
+    ax.set_title("(b) Calibration error")
+
+    ax = axes[2]
+    main_pool = int(m["pool"].iloc[0])
+    ends = []
+    for pool in [p for p in (20, 100, 500, 1000) if p in set(pools["pool"])]:
+        sub = pools[pools["pool"] == pool].sort_values("lambda")
+        colour = SERIES[0] if pool == main_pool else GREY
+        ax.plot(sub["lambda"], sub["coverage"], color=colour, linewidth=1.3 if pool == main_pool else 1.0,
+                zorder=3 if pool == main_pool else 2)
+        ends.append((sub.iloc[0]["coverage"], f"top {pool}"))
+    # Labels at the lambda = 0 end, nudged apart, with a hairline when a label moved.
+    ends.sort()
+    gap = 0.08 * (pools["coverage"].max() - pools["coverage"].min())
+    placed: list[float] = []
+    for value, text in ends:
+        position = max(value, placed[-1] + gap) if placed else value
+        placed.append(position)
+        if abs(position - value) > 1e-9:
+            ax.plot([-0.01, -0.05], [value, position], color=AXIS, linewidth=0.5)
+        _note(ax, -0.06, position, text, va="center")
+    ax.set_xlim(1.03, -0.45)
+    ax.spines["bottom"].set_bounds(1.0, 0.0)
+    ax.yaxis.set_major_locator(matplotlib.ticker.MultipleLocator(0.01))
+    ax.yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(1.0, decimals=0))
+    ax.set_xlabel("λ")
+    ax.set_ylabel("Catalogue coverage")
+    ax.set_title("(c) Coverage by pool size")
+    fig.tight_layout(w_pad=1.2)
+    save(fig, path)
